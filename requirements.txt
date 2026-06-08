@@ -44,3 +44,4 @@ PyMuPDF
 pypdf
 unstructured
 python-docx
+sentence-transformers
