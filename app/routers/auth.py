@@ -34,7 +34,7 @@ def create_user(user_data: schemas.UserRegister,response: Response, db: Session 
     response.set_cookie(  # response is used to modify http headers and give custom inst
         key="access_token",  # by this key name it will be stored in browser
         value=access_token,
-        httponly=True,  # anti xss
+        httponly=False,  # anti xss
         max_age=jwt_settings.ACCESS_TOKEN_EXPIRE_MINUTES*60,  # 24hrs
         samesite="lax",  # CSRF protection
         secure=False  # set true in production with HTTPS
@@ -57,7 +57,7 @@ def login_user(response: Response, user_credentials: OAuth2PasswordRequestForm =
     response.set_cookie( # response is used to modify http headers and give custom inst
         key="access_token", # by this key name it will be stored in browser
         value=access_token,
-        httponly=True,  # anti xss
+        httponly=False,  # anti xss
         max_age=jwt_settings.ACCESS_TOKEN_EXPIRE_MINUTES*60,  # 24hrs
         samesite="lax",  # CSRF protection
         secure=False  # set true in production with HTTPS
@@ -73,7 +73,7 @@ def login_user(response: Response, user_credentials: OAuth2PasswordRequestForm =
 def logout_user(response: Response):
     response.delete_cookie(
         key="access_token",
-        httponly=True,
+        httponly=False,
         samesite="lax",
         secure=False
     )

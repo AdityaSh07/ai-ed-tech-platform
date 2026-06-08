@@ -1,0 +1,36 @@
+# Web Framework & Server
+fastapi
+uvicorn
+python-multipart
+
+# Database & ORM
+sqlalchemy
+psycopg2
+
+# Auth & Security
+python-jose
+pwdlib[argon2]
+
+# Validation & Settings
+pydantic
+
+# Environment
+python-dotenv
+
+# Agent & Orchestration (LangChain / LangGraph)
+langchain
+langchain-core
+langchain-community
+langchain-text-splitters
+langgraph
+langchainhub
+
+# LLMs & Inference integrations
+langchain-groq
+langchain-google-genai
+
+# Embeddings & Vector Stores
+faiss-cpu
+
+# Doc Loaders & OCR
+docling

@@ -31,3 +31,8 @@ class UserOut(BaseModel):
 class TokenData(BaseModel):
     id: Optional[int] = None
     first_name: Optional[str] = None
+
+class ChatRequest(BaseModel):
+    user_query: str
+    docs_available: bool = False
+    use_strictly_retriever: bool = False

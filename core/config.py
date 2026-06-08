@@ -64,8 +64,8 @@ llm_settings = LLMSettings()
 
 class RetrieverSettings(BaseSettings):
     RETRIEVER_SEARCH_TYPE: str = "mmr"
-    RETRIEVER_K: int = 1
-    RETRIEVER_LAMBDA_MULT: float = 0.9
+    RETRIEVER_K: int = 5
+    RETRIEVER_LAMBDA_MULT: float = 0.6
 
     class Config:
         env_file = ".env"
