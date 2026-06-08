@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import auth, context_agent, notebook_agent, research_agent
+from app.routers import auth, context_agent, notebook_agent
 from core.database import engine
 from core.models import user_model
 
