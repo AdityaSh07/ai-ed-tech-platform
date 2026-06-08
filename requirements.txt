@@ -24,10 +24,10 @@ langchain-community
 langchain-text-splitters
 langgraph
 langchainhub
+langchain-pinecone
 
 # LLMs & Inference integrations
 langchain-groq
-langchain-google-genai
 langchain-tavily
 
 # Embeddings & Vector Stores
