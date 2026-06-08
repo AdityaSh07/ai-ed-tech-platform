@@ -1,26 +1,3 @@
-# config = {"configurable": {"thread_id": "user_1"}}
-
-# ini = {
-#     "chat_history": [],
-#     "user_query": '''
-# Explain and Introduction, Python Basics: Entering Expressions into the Interactive Shell, The Integer, Floating‐Point, and
-# String Data Types, String Concatenation and Replication, Storing Values in Variables, Dissecting Your Program.
-# Flow control: Boolean Values, Comparison Operators, Boolean Operators, Mixing Boolean and Comparison
-# Operators, Elements of Flow Control, Program Execution, Flow Control Statements, Importing Modules, Ending
-# a Program Early with sys.exit().
-# ''',
-#     "use_strictly_retriever": False,
-#     "docs_available": False,
-# }
-
-# from app.context_agent.graph import agent
-
-# result = agent.invoke(
-#     ini,
-#     config=config,
-# )
-# print([heading +"\n\n" for heading in result['headings']])
-# print(result['final_answer'])
 import os
 from pathlib import Path
 
@@ -30,7 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
-from app.routers import auth, context_agent
+from app.routers import auth, context_agent, notebook_agent, research_agent
 from core.database import engine, SessionLocal
 from core.models import user_model
 
@@ -47,13 +24,17 @@ app = FastAPI(
     version="1.0.0",
 )
 
+# Allow setting frontend url from environment for cross-platform deployments (like Vercel)
+frontend_url = os.environ.get("FRONTEND_URL")
+allowed_origins = [
+    "*"
+]
+if frontend_url:
+    allowed_origins.append(frontend_url)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:8000",
-        "http://127.0.0.1:8000",
-        "null",
-    ],
+    allow_origins=allowed_origins,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
     allow_credentials=True,   # Required for cookie-based auth
@@ -65,7 +46,8 @@ user_model.Base.metadata.create_all(bind=engine)
 # ── Include API routers ──
 app.include_router(auth.router)
 app.include_router(context_agent.router)
-# app.include_router(context_agent.router)
+app.include_router(notebook_agent.router)
+app.include_router(research_agent.router)
 
 app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
 
