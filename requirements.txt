@@ -25,6 +25,7 @@ langchain-text-splitters
 langgraph
 langchainhub
 langchain-pinecone
+langchain-huggingface
 
 # LLMs & Inference integrations
 langchain-groq
@@ -35,3 +36,11 @@ faiss-cpu
 
 # Doc Loaders & OCR
 docling
+
+
+#additional 
+pydantic-settings
+PyMuPDF
+pypdf
+unstructured
+python-docx
