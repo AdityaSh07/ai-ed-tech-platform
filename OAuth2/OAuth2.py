@@ -45,6 +45,9 @@ def get_current_user(request: Request, db: Session = Depends(database.get_db)):
 
     user = db.query(models.user_model.User).filter(models.user_model.User.id == token_data.id).first()
 
+    if not user:
+        raise credentials_exception
+
     return int(user.id)
 
 

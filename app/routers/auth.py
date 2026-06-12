@@ -34,10 +34,10 @@ def create_user(user_data: schemas.UserRegister,response: Response, db: Session 
     response.set_cookie( # response is used to modify http headers and give custom inst
         key="access_token", # by this key name it will be stored in browser
         value=access_token,
-        httponly=False,  # anti xss
+        httponly=True,  # anti xss
         max_age=jwt_settings.ACCESS_TOKEN_EXPIRE_MINUTES*60,  # 24hrs
-        samesite="None",  # CSRF protection
-        secure=False  # set true in production with HTTPS
+        samesite="none",  # CSRF protection
+        secure=True  # set true in production with HTTPS
     )
 
     return new_user # here we will return response as per the response_model to avoid releasing any credentials
@@ -57,10 +57,10 @@ def login_user(response: Response, user_credentials: OAuth2PasswordRequestForm =
     response.set_cookie( # response is used to modify http headers and give custom inst
         key="access_token", # by this key name it will be stored in browser
         value=access_token,
-        httponly=False,  # anti xss
+        httponly=True,  # anti xss
         max_age=jwt_settings.ACCESS_TOKEN_EXPIRE_MINUTES*60,  # 24hrs
-        samesite="None",  # CSRF protection
-        secure=False  # set true in production with HTTPS
+        samesite="none",  # CSRF protection
+        secure=True  # set true in production with HTTPS
     )
     # we need response: Response to modify the headers. we need to modify headers to send browser instructions
 
@@ -73,9 +73,9 @@ def login_user(response: Response, user_credentials: OAuth2PasswordRequestForm =
 def logout_user(response: Response):
     response.delete_cookie(
         key="access_token",
-        httponly=False,
-        samesite="None",
-        secure=False
+        httponly=True,
+        samesite="none",
+        secure=True
     )
     return {"message": "Successfully logged out"}
 

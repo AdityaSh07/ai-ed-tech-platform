@@ -6,6 +6,7 @@ python-multipart
 # Database & ORM
 sqlalchemy
 psycopg2-binary
+pymongo
 
 # Auth & Security
 python-jose
@@ -26,22 +27,23 @@ langgraph
 langchainhub
 langchain-pinecone
 langchain-huggingface
+langchain-nvidia-ai-endpoints
 
 # LLMs & Inference integrations
 langchain-groq
 langchain-tavily
 
-# Embeddings & Vector Stores
-faiss-cpu
-
 # Doc Loaders & OCR
 docling
 
-
-#additional 
+# Additional
 pydantic-settings
 PyMuPDF
 pypdf
 unstructured
 python-docx
+
+# CPU-only ML
+torch==2.7.1+cpu
+torchvision==0.22.1+cpu
 sentence-transformers

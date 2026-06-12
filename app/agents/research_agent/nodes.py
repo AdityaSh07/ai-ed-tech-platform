@@ -102,7 +102,7 @@ def research_node(state: State) -> dict:
 
     mode = state.get("mode", "closed_book")
     if mode == "open_book":
-        as_of = date.fromisoformat(state["as_of"])
+        as_of = date.fromisoformat(state["as_of"][:10])
         cutoff = as_of - timedelta(days=int(state["recency_days"]))
         fresh: List[EvidenceItem] = []
         for e in evidence:
