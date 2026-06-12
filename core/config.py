@@ -48,7 +48,7 @@ vector_db_settings = VectorDBSettings()
 
 class LLMSettings(BaseSettings):
     LLM_REASONING_MODEL: str = "openai/gpt-oss-120b"
-    LLM_GENERATION_MODEL: str = "llama-3.3-70b-versatile"
+    LLM_GENERATION_MODEL: str = "openai/gpt-oss-120b"
     LLM_REASONING_TEMPERATURE: float = 0
     LLM_GENERATION_TEMPERATURE: float = 0.6
     EMBEDDING_MODEL_NAME: str = "sentence-transformers/all-MiniLM-L6-v2"
@@ -67,8 +67,22 @@ class RetrieverSettings(BaseSettings):
     RETRIEVER_K: int = 5
     RETRIEVER_LAMBDA_MULT: float = 0.6
 
+    
+
+retriever_settings = RetrieverSettings()
+
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class MongoDB(BaseSettings):
+    MONGO_USERNAME: str
+    MONGO_PASSWORD: str
+    MONGO_CLUSTER: str
+    MONGO_KEY: str
+
     class Config:
         env_file = ".env"
         extra = "ignore"
 
-retriever_settings = RetrieverSettings()
+mongoDB = MongoDB()

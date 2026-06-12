@@ -34,5 +34,6 @@ class TokenData(BaseModel):
 
 class ChatRequest(BaseModel):
     user_query: str
-    docs_available: bool = False
-    use_strictly_retriever: bool = False
+    use_strictly_retriever: bool
+    docs_available: bool
+    session_id: str | None = None

@@ -31,12 +31,12 @@ def create_user(user_data: schemas.UserRegister,response: Response, db: Session 
 
     access_token = OAuth2.create_access_token(data={"id": new_user.id, 'first_name': new_user.first_name})
 
-    response.set_cookie(  # response is used to modify http headers and give custom inst
-        key="access_token",  # by this key name it will be stored in browser
+    response.set_cookie( # response is used to modify http headers and give custom inst
+        key="access_token", # by this key name it will be stored in browser
         value=access_token,
         httponly=False,  # anti xss
         max_age=jwt_settings.ACCESS_TOKEN_EXPIRE_MINUTES*60,  # 24hrs
-        samesite="lax",  # CSRF protection
+        samesite="None",  # CSRF protection
         secure=False  # set true in production with HTTPS
     )
 
@@ -59,7 +59,7 @@ def login_user(response: Response, user_credentials: OAuth2PasswordRequestForm =
         value=access_token,
         httponly=False,  # anti xss
         max_age=jwt_settings.ACCESS_TOKEN_EXPIRE_MINUTES*60,  # 24hrs
-        samesite="lax",  # CSRF protection
+        samesite="None",  # CSRF protection
         secure=False  # set true in production with HTTPS
     )
     # we need response: Response to modify the headers. we need to modify headers to send browser instructions
@@ -74,7 +74,7 @@ def logout_user(response: Response):
     response.delete_cookie(
         key="access_token",
         httponly=False,
-        samesite="lax",
+        samesite="None",
         secure=False
     )
     return {"message": "Successfully logged out"}
