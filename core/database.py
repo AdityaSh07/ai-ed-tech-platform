@@ -2,8 +2,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from .config import db_settings as settings
+from dotenv import load_dotenv
+import os
 
-SQLALCHEMY_DATABASE_URL = f'postgresql://{settings.DATABASE_USERNAME}:{settings.DATABASE_PASSWORD}@{settings.DATABASE_HOSTNAME}:{settings.DATABASE_PORT}/{settings.DATABASE_NAME}'
+
+
+SQLALCHEMY_DATABASE_URL = os.getenv("POSTGRE_DB_URL")
+
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
