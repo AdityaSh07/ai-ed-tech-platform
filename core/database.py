@@ -4,7 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from .config import db_settings as settings
 from dotenv import load_dotenv
 import os
-
+load_dotenv()
 
 
 SQLALCHEMY_DATABASE_URL = os.getenv("POSTGRE_DB_URL")
