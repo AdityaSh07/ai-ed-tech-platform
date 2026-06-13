@@ -47,8 +47,10 @@ class VectorDBSettings(BaseSettings):
 vector_db_settings = VectorDBSettings()
 
 class LLMSettings(BaseSettings):
-    LLM_REASONING_MODEL: str = "openai/gpt-oss-120b"
-    LLM_GENERATION_MODEL: str = "openai/gpt-oss-120b"
+    LLM_GOOGLE: str = "gemini-2.5-flash"
+    LLM_GROQ_OPENAI: str = "openai/gpt-oss-120b"
+    LLM_GROQ_LLAMA: str = "llama-3.3-70b-versatile"
+    LLM_NVIDIA: str = "meta/llama-3.3-70b-instruct"
     LLM_REASONING_TEMPERATURE: float = 0
     LLM_GENERATION_TEMPERATURE: float = 0.6
     EMBEDDING_MODEL_NAME: str = "sentence-transformers/all-MiniLM-L6-v2"

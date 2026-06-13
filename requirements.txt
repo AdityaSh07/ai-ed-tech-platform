@@ -38,10 +38,4 @@ docling
 
 # Additional
 pydantic-settings
-PyMuPDF
-pypdf
-unstructured
-python-docx
-
-
 sentence-transformers

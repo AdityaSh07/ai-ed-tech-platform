@@ -1,5 +1,5 @@
 from .state import State
-from .llm import gen_llm
+from .llm import llm
 from .prompts import notes_generation_prompt
 from .schemas import NoteSection
 
@@ -19,7 +19,7 @@ def generate_notes(state: State):
         current_window_text=current_window_text
     )
     
-    response = gen_llm.invoke(prompt)
+    response = llm.invoke(prompt)
     
     new_notes = all_notes + [response.content]
     

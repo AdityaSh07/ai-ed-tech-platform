@@ -3,6 +3,7 @@ import warnings
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.routers import (
     auth,
@@ -29,7 +30,11 @@ app = FastAPI(
 # CORS
 frontend_url = os.getenv("FRONTEND_URL")
 
-allowed_origins = []
+allowed_origins = [
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "null"  # Supports local file:// protocol development
+]
 
 if frontend_url:
     allowed_origins.append(frontend_url)
@@ -37,7 +42,6 @@ if frontend_url:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
-    allow_origin_regex=r"https?://.*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -53,9 +57,13 @@ app.include_router(notebook_agent.router)
 app.include_router(research_agent.router)
 
 
-@app.get("/")
+@app.get("/health")
 def health_check():
     return {
         "status": "healthy",
         "service": "EduSphere AI API"
     }
+
+
+# Mount frontend static files
+app.mount("/", StaticFiles(directory="frontend_ed_tech", html=True), name="frontend")

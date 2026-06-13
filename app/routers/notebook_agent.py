@@ -9,7 +9,7 @@ load_dotenv()
 
 from app.agents.notebook_agent.utils import clean_pdf_text
 from app.agents.notebook_agent.graph import agent
-from langchain_community.document_loaders import PyPDFLoader, TextLoader, UnstructuredWordDocumentLoader, UnstructuredMarkdownLoader
+from docling.document_converter import DocumentConverter
 
 UPLOAD_DIR = Path(__file__).resolve().parents[1] / "load_documents" / "uploads"
 
@@ -22,25 +22,21 @@ def extract_and_window_pages(file_path_str: str, window_size: int = 4, overlap: 
     ext = Path(file_path_str).suffix.lower()
     pages = []
     
+    supported_extensions = [".pdf", ".txt", ".md", ".markdown", ".doc", ".docx"]
+    
     try:
-        if ext == ".pdf":
-            loader = PyPDFLoader(file_path_str)
-            docs = loader.load()
-            pages = [clean_pdf_text(doc.page_content) for doc in docs]
-        elif ext in [".txt", ".md", ".markdown"]:
-            with open(file_path_str, "r", encoding="utf-8", errors="ignore") as f:
-                content = f.read()
-            full_text = clean_pdf_text(content)
-            page_length = 2500
-            pages = [full_text[i:i+page_length] for i in range(0, len(full_text), page_length)]
-        elif ext in [".doc", ".docx"]:
-            loader = UnstructuredWordDocumentLoader(file_path_str)
-            docs = loader.load()
-            full_text = clean_pdf_text("\n".join([d.page_content for d in docs]))
-            page_length = 2500
-            pages = [full_text[i:i+page_length] for i in range(0, len(full_text), page_length)]
-        else:
+        if ext not in supported_extensions:
             raise ValueError(f"Unsupported file format: {ext}")
+            
+        converter = DocumentConverter()
+        result = converter.convert(file_path_str)
+        doc = result.document
+        
+        full_text = doc.export_to_markdown()
+        full_text = clean_pdf_text(full_text)
+        
+        page_length = 2500
+        pages = [full_text[i:i+page_length] for i in range(0, len(full_text), page_length)]
     except Exception as e:
         raise ValueError(f"Failed to process document: {e}")
 
