@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduAI Hub - Authentication</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Animated particle network background -->
+    <canvas id="particle-canvas" aria-hidden="true"></canvas>
+
+    <div class="bg-glowing-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Floating geometric shapes -->
+    <div class="floating-shapes" aria-hidden="true">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+        <div class="shape shape-5"></div>
+    </div>
+
+    <div class="auth-container">
+        <div class="brand-sidebar">
+            <div class="brand-content">
+                <h2>EduAI Hub</h2>
+                <p>Unlock advanced AI chatbots, instant smart notes, and deep research tools tailored for your learning
+                    journey.</p>
+            </div>
+            <div class="brand-overlay"></div>
+        </div>
+
+        <div class="form-box">
+            <form id="login-form" class="auth-form active">
+                <h2>Welcome Back</h2>
+                <p class="subtitle">Log in to access your AI study assistants</p>
+
+
+
+                <div class="input-group">
+                    <label for="login-email">Email Address</label>
+                    <input type="email" id="login-email" required placeholder="you@example.com">
+                </div>
+
+                <div class="input-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" required placeholder="••••••••">
+                </div>
+
+                <div class="form-actions">
+                    <a href="#" class="forgot-link">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="btn-primary">Sign In</button>
+
+                <p class="toggle-text">New to EduAI? <a href="#" id="to-register">Create an account</a></p>
+            </form>
+
+            <form id="register-form" class="auth-form">
+                <h2>Create Account</h2>
+                <p class="subtitle">Start researching and learning smarter today</p>
+
+
+
+                <div class="input-group">
+                    <label for="reg-email">Email Address</label>
+                    <input type="email" id="reg-email" required placeholder="you@example.com">
+                </div>
+
+                <div class="input-group">
+                    <label for="reg-password">Password</label>
+                    <input type="password" id="reg-password" required placeholder="Minimum 6 characters">
+                </div>
+
+                <button type="submit" class="btn-primary">Get Started</button>
+
+                <p class="toggle-text">Already have an account? <a href="#" id="to-login">Sign in</a></p>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+    <!-- Particle Network Animation -->
+    <script>
+    (function() {
+        const canvas = document.getElementById('particle-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+
+        let w, h, particles;
+        const PARTICLE_COUNT = 60;
+        const CONNECTION_DIST = 140;
+        const MOUSE_DIST = 180;
+        let mouse = { x: -1000, y: -1000 };
+
+        function resize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        }
+
+        function createParticles() {
+            particles = [];
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                particles.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    vx: (Math.random() - 0.5) * 0.4,
+                    vy: (Math.random() - 0.5) * 0.4,
+                    r: Math.random() * 2 + 1,
+                    alpha: Math.random() * 0.5 + 0.2
+                });
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, w, h);
+
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < CONNECTION_DIST) {
+                        const alpha = (1 - dist / CONNECTION_DIST) * 0.15;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(59, 130, 246, ${alpha})`;
+                        ctx.lineWidth = 0.6;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            for (const p of particles) {
+                const mdx = p.x - mouse.x;
+                const mdy = p.y - mouse.y;
+                const mDist = Math.sqrt(mdx * mdx + mdy * mdy);
+                if (mDist < MOUSE_DIST && mDist > 0) {
+                    const force = (MOUSE_DIST - mDist) / MOUSE_DIST * 0.02;
+                    p.vx += (mdx / mDist) * force;
+                    p.vy += (mdy / mDist) * force;
+                }
+
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vx *= 0.999;
+                p.vy *= 0.999;
+
+                if (p.x < 0) p.x = w;
+                if (p.x > w) p.x = 0;
+                if (p.y < 0) p.y = h;
+                if (p.y > h) p.y = 0;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(59, 130, 246, ${p.alpha})`;
+                ctx.fill();
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        window.addEventListener('resize', () => { resize(); createParticles(); });
+        document.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
+        document.addEventListener('mouseleave', () => { mouse.x = -1000; mouse.y = -1000; });
+
+        resize();
+        createParticles();
+        draw();
+    })();
+    </script>
+</body>
+
+</html>

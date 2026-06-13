@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduAI Hub - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Animated particle network background -->
+    <canvas id="particle-canvas" aria-hidden="true"></canvas>
+
+    <div class="bg-glowing-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Floating geometric shapes -->
+    <div class="floating-shapes" aria-hidden="true">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+        <div class="shape shape-5"></div>
+    </div>
+
+    <header class="global-header">
+        <div class="header-left">
+            <h1 class="logo-text">EduAI Hub</h1>
+        </div>
+        <div class="header-right">
+            <div class="user-profile" id="user-profile-btn" style="position: relative; cursor: pointer;">
+                <div class="user-info">
+                    <span class="username">Aditya Sharma</span>
+                </div>
+                <div class="avatar">AS</div>
+                
+                <!-- Profile Dropdown -->
+                <div class="profile-dropdown" id="profile-dropdown">
+                    <button id="logout-btn" class="dropdown-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-container">
+
+        <section id="selection-grid" class="grid-view active">
+            <div class="welcome-banner">
+                <h2>Select an AI Workspace</h2>
+                <p>Choose an agentic pipeline to assist with your academic research, note synthesis, or precise Q&A.</p>
+            </div>
+
+            <div class="cards-wrapper">
+                <div class="feature-card" data-action="rag-section">
+                    <div class="card-illustration">
+                        <img src="rag.png" alt="Self-Correcting RAG Illustration" onerror="this.src='../rag.png'">
+                    </div>
+                    <div class="feature-card-content">
+                        <div class="feature-chips">
+                            <span class="chip">Fact-Checked</span>
+                            <span class="chip">Strict Docs Mode</span>
+                        </div>
+                        <h3>InsightAI</h3>
+                        <p>Ask complex questions. The system retrieves, evaluates, and verifies context definitions to eliminate hallucinations.</p>
+                        <span class="card-action-text">Launch Chatbot</span>
+                    </div>
+                </div>
+
+                <div class="feature-card" data-action="notes-section">
+                    <div class="card-illustration">
+                        <img src="notes_generation.png" alt="Notes Generator Illustration" onerror="this.src='../notes_generation.png'">
+                    </div>
+                    <div class="feature-card-content">
+                        <div class="feature-chips">
+                            <span class="chip">Markdown Export</span>
+                            <span class="chip">Chunked Extraction</span>
+                        </div>
+                        <h3>Forger</h3>
+                        <p>Upload large books, dense PDFs, or syllabus structures to compile clean, summarized markdown concept logs.</p>
+                        <span class="card-action-text">Open Workspace</span>
+                    </div>
+                </div>
+
+                <div class="feature-card" data-action="research-section">
+                    <div class="card-illustration">
+                        <img src="research_agent.png" alt="Research Agent Illustration" onerror="this.src='../research_agent.png'">
+                    </div>
+                    <div class="feature-card-content">
+                        <div class="feature-chips">
+                            <span class="chip">Web Search</span>
+                            <span class="chip">Human-in-Loop</span>
+                        </div>
+                        <h3>ExplorerAI</h3>
+                        <p>Launch an autonomous deep research agent to execute multi-step web queries, gather sources, and compile detailed synthesis reports.</p>
+                        <span class="card-action-text">Launch Deep Research Agent</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="feature-view-container">
+            <button class="btn-back" id="back-to-hub">&larr; Back to Workspace Hub</button>
+
+            <div id="rag-section" class="dynamic-panel">
+                <div class="panel-header">
+                    <h2>InsightAI (Verified RAG)</h2>
+                    <p>Verified factual retrieval engine execution layer.</p>
+                </div>
+                
+                <div class="workspace-split rag-split">
+                    <!-- Sidebar for history -->
+                    <div class="history-sidebar">
+                        <div class="sidebar-header">
+                            <h3>Chat History</h3>
+                            <button id="new-chat-btn" class="btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;">+ New</button>
+                        </div>
+                        <ul id="chat-history-list" class="history-list">
+                            <li class="history-item placeholder">Loading history...</li>
+                        </ul>
+                    </div>
+
+                    <!-- Upload status moved below chat -->
+                    <div class="chat-wrapper">
+                        <div class="chat-box" id="chat-output">
+                            <div class="message system">System initialized. Awaiting source queries or document specifications...</div>
+                        </div>
+                        <form class="chat-input-area" id="chat-form" style="align-items: center;">
+                            <label for="rag-file-input" title="Upload Document" style="cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; background: var(--input-bg); border: 1px solid var(--border); color: var(--accent); font-size: 1.5rem; transition: background 0.3s ease;">
+                                +
+                            </label>
+                            <input type="file" id="rag-file-input" accept=".pdf,.doc,.docx,.txt,.md,.markdown" style="display: none;">
+                            <button type="button" class="btn-primary" id="upload-rag-file" style="display:none;">Upload to RAG</button>
+                            <input type="text" id="chat-input" placeholder="Ask your knowledge base..." autocomplete="off" autocorrect="off" spellcheck="false" style="flex-grow: 1;">
+                            <button type="button" class="mode-toggle" id="strict-docs-toggle" aria-pressed="false" title="Use uploaded documents plus general knowledge">
+                                Flexible
+                            </button>
+                            <button type="submit" class="btn-primary">Send Query</button>
+                        </form>
+                        <div style="margin-top: 8px; text-align: center;">
+                            <p class="upload-status" id="rag-upload-status" aria-live="polite"></p>
+                            <small id="rag-file-name" style="color: var(--text-muted); font-size: 0.8rem; display: none;"></small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="notes-section" class="dynamic-panel">
+                <div class="panel-header">
+                    <h2>Forger (AI Synthesis)</h2>
+                    <p>Convert long papers and books into concise technical outlines.</p>
+                </div>
+                <div class="workspace-split">
+                    <div class="control-box">
+                        <label class="file-picker drop-zone" for="notes-file-input" style="cursor: pointer; display: block;">
+                            <span class="drop-icon">📁</span>
+                            <span>
+                                <strong>Upload reference book or notes</strong>
+                                <small id="notes-file-name">PDF, DOCX, TXT, or Markdown</small>
+                            </span>
+                        </label>
+                        <input type="file" id="notes-file-input" accept=".pdf,.doc,.docx,.txt,.md,.markdown" style="display: none;">
+                        <button class="btn-primary" id="generate-notes-btn">Compile Notes</button>
+                    </div>
+                    <div class="output-preview">
+                        <div class="markdown-body" id="notes-output" style="white-space: pre-wrap; font-size: 0.95rem; line-height: 1.6;">
+                            <p class="placeholder-text">Compiled concepts markdown layout will render here...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="research-section" class="dynamic-panel">
+                <div class="panel-header">
+                    <h2>ExplorerAI (Autonomous Deep Research Agent)</h2>
+                    <p>Track live research query progress, search sources, and agent reasoning traces during execution.</p>
+                </div>
+                <div class="research-flow">
+                    <div class="input-group">
+                        <label for="research-topic">Research Target / Objective</label>
+                        <input type="text" id="research-topic"
+                            placeholder="e.g., Evaluating LoRA vs QLoRA fine-tuning latency overhead" autocomplete="off" autocorrect="off" spellcheck="false">
+                    </div>
+                    <button class="btn-primary" id="start-research-btn">Launch Deep Research Agent</button>
+                    
+                    <div id="feedback-container" style="display: none; margin-top: 20px; padding: 15px; background: rgba(30,41,59,0.5); border: 1px solid var(--glass-border); border-radius: 8px;">
+                        <h3 style="margin-bottom: 10px; font-size: 1.1rem; color: var(--text-main);">Review Research Queries</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">The agent generated the following queries. You can provide modifications or start the research directly.</p>
+                        <ul id="research-queries-list" style="margin-bottom: 15px; padding-left: 20px; color: var(--accent); font-size: 0.95rem;"></ul>
+                        <textarea id="research-feedback-input" placeholder="Type query modifications here... (Leave empty to start research with the queries shown above)" rows="3" style="width: 100%; padding: 10px; border-radius: 6px; background: #000000; color: #ffffff; border: 1px solid var(--accent); margin-bottom: 15px; font-size: 0.95rem; line-height: 1.5; box-shadow: 0 0 10px rgba(59, 130, 246, 0.15);" autocomplete="off" autocorrect="off" spellcheck="false"></textarea>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn-primary" id="submit-feedback-btn">Send Modifications & Start</button>
+                        </div>
+                    </div>
+
+                    <div class="log-screen" id="research-logs">
+                        <span class="log-entry system">System ready. Enter a research target above and click Launch to begin...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <div class="modal-backdrop" id="strict-docs-modal" aria-hidden="true">
+        <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="strict-docs-title">
+            <h2 id="strict-docs-title">Use only uploaded documents?</h2>
+            <p>Choose whether the RAG chatbot should answer strictly from your uploaded files or combine them with general knowledge.</p>
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" id="strict-docs-no">No</button>
+                <button type="button" class="btn-primary" id="strict-docs-yes">Yes</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+
+    <!-- Particle Network Animation -->
+    <script>
+    (function() {
+        const canvas = document.getElementById('particle-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+
+        let w, h, particles;
+        const PARTICLE_COUNT = 60;
+        const CONNECTION_DIST = 140;
+        const MOUSE_DIST = 180;
+        let mouse = { x: -1000, y: -1000 };
+
+        function resize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        }
+
+        function createParticles() {
+            particles = [];
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                particles.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    vx: (Math.random() - 0.5) * 0.4,
+                    vy: (Math.random() - 0.5) * 0.4,
+                    r: Math.random() * 2 + 1,
+                    alpha: Math.random() * 0.5 + 0.2
+                });
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, w, h);
+
+            // Draw connections
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < CONNECTION_DIST) {
+                        const alpha = (1 - dist / CONNECTION_DIST) * 0.15;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(59, 130, 246, ${alpha})`;
+                        ctx.lineWidth = 0.6;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            // Draw particles & mouse interactions
+            for (const p of particles) {
+                // Mouse repulsion
+                const mdx = p.x - mouse.x;
+                const mdy = p.y - mouse.y;
+                const mDist = Math.sqrt(mdx * mdx + mdy * mdy);
+                if (mDist < MOUSE_DIST && mDist > 0) {
+                    const force = (MOUSE_DIST - mDist) / MOUSE_DIST * 0.02;
+                    p.vx += (mdx / mDist) * force;
+                    p.vy += (mdy / mDist) * force;
+                }
+
+                p.x += p.vx;
+                p.y += p.vy;
+
+                // Damping
+                p.vx *= 0.999;
+                p.vy *= 0.999;
+
+                // Wrap edges
+                if (p.x < 0) p.x = w;
+                if (p.x > w) p.x = 0;
+                if (p.y < 0) p.y = h;
+                if (p.y > h) p.y = 0;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(59, 130, 246, ${p.alpha})`;
+                ctx.fill();
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        window.addEventListener('resize', () => { resize(); createParticles(); });
+        document.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
+        document.addEventListener('mouseleave', () => { mouse.x = -1000; mouse.y = -1000; });
+
+        resize();
+        createParticles();
+        draw();
+    })();
+    </script>
+</body>
+
+</html>
