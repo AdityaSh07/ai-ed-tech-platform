@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EduAI Hub - Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="stylesheet" href="style.css?v=1.3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
@@ -41,6 +42,13 @@
                 
                 <!-- Profile Dropdown -->
                 <div class="profile-dropdown" id="profile-dropdown">
+                    <button id="my-profile-btn" class="dropdown-item" data-action="profile-section">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        My Profile
+                    </button>
                     <button id="logout-btn" class="dropdown-item">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
                             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
@@ -206,6 +214,54 @@
 
                     <div class="log-screen" id="research-logs">
                         <span class="log-entry system">System ready. Enter a research target above and click Launch to begin...</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="profile-section" class="dynamic-panel">
+                <div class="panel-header">
+                    <h2>Profile Settings</h2>
+                    <p>Update your personal information and account security details.</p>
+                </div>
+                <div class="profile-layout">
+                    <div class="control-box profile-card">
+                        <h3>Personal Details</h3>
+                        <form id="profile-details-form">
+                            <div class="input-group">
+                                <label for="profile-firstname">First Name</label>
+                                <input type="text" id="profile-firstname" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="profile-lastname">Last Name</label>
+                                <input type="text" id="profile-lastname">
+                            </div>
+                            <div class="input-group">
+                                <label for="profile-email">Email Address</label>
+                                <input type="email" id="profile-email" required>
+                            </div>
+                            <button type="submit" class="btn-primary">Update Details</button>
+                            <p id="profile-details-msg" style="margin-top: 10px; font-size: 0.9rem;"></p>
+                        </form>
+                    </div>
+
+                    <div class="control-box profile-card">
+                        <h3>Change Password</h3>
+                        <form id="profile-password-form">
+                            <div class="input-group">
+                                <label for="profile-current-password">Current Password</label>
+                                <input type="password" id="profile-current-password" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="profile-new-password">New Password</label>
+                                <input type="password" id="profile-new-password" required placeholder="Minimum 8 characters">
+                            </div>
+                            <div class="input-group">
+                                <label for="profile-confirm-password">Confirm New Password</label>
+                                <input type="password" id="profile-confirm-password" required placeholder="Confirm your new password">
+                            </div>
+                            <button type="submit" class="btn-primary">Update Password</button>
+                            <p id="profile-password-msg" style="margin-top: 10px; font-size: 0.9rem;"></p>
+                        </form>
                     </div>
                 </div>
             </div>

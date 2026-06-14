@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, model_validator,EmailStr
 from typing import Optional
 
 class UserRegister(BaseModel):
@@ -25,7 +25,9 @@ class UserLogin(BaseModel):
 
 class UserOut(BaseModel):
     first_name: str
+    last_name: str = None
     id: int
+    email: str 
 
 
 class TokenData(BaseModel):
@@ -37,3 +39,22 @@ class ChatRequest(BaseModel):
     use_strictly_retriever: bool
     docs_available: bool
     session_id: str | None = None
+
+
+class UserData(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[EmailStr] = None
+
+class PassWord(BaseModel):
+    current_password: str
+    new_password: str = Field(min_length=8)
+
+class UserProfileOut(BaseModel):
+    id: int
+    first_name: str
+    last_name: str
+    email: str
+
+    class Config:
+        from_attributes = True

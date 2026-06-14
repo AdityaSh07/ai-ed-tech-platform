@@ -37,7 +37,7 @@ def create_user(user_data: schemas.UserRegister,response: Response, db: Session 
         httponly=True,  # anti xss
         max_age=jwt_settings.ACCESS_TOKEN_EXPIRE_MINUTES*60,  # 24hrs
         samesite="lax",  # CSRF protection
-        secure=False  # allow local non-HTTPS monolithic hosting
+        secure=True  # allow local non-HTTPS monolithic hosting
     )
 
     return new_user # here we will return response as per the response_model to avoid releasing any credentials
@@ -60,7 +60,7 @@ def login_user(response: Response, user_credentials: OAuth2PasswordRequestForm =
         httponly=True,  # anti xss
         max_age=jwt_settings.ACCESS_TOKEN_EXPIRE_MINUTES*60,  # 24hrs
         samesite="lax",  # CSRF protection
-        secure=False  # allow local non-HTTPS monolithic hosting
+        secure=True  # allow local non-HTTPS monolithic hosting
     )
     # we need response: Response to modify the headers. we need to modify headers to send browser instructions
 
@@ -75,7 +75,7 @@ def logout_user(response: Response):
         key="access_token",
         httponly=True,
         samesite="lax",
-        secure=False
+        secure=True
     )
     return {"message": "Successfully logged out"}
 

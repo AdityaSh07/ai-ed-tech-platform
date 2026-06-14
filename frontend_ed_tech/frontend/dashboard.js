@@ -33,7 +33,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Profile Dropdown & Logout Logic ---
     const userProfileBtn = document.getElementById('user-profile-btn');
     const profileDropdown = document.getElementById('profile-dropdown');
+    const myProfileBtn = document.getElementById('my-profile-btn');
     const logoutBtn = document.getElementById('logout-btn');
+
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('first_name');
+            localStorage.removeItem('last_name');
+            localStorage.removeItem('email');
+            window.location.href = '../index.html';
+        });
+    }
 
     if (userProfileBtn && profileDropdown && logoutBtn) {
         userProfileBtn.addEventListener('click', (e) => {
@@ -46,6 +57,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 profileDropdown.classList.remove('active');
             }
         });
+
+        if (myProfileBtn) {
+            myProfileBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                profileDropdown.classList.remove('active');
+                
+                // Hide selection interface grid
+                selectionGrid.classList.remove('active');
+                viewContainer.classList.add('active');
+                
+                // Activate the profile panel
+                dynamicPanels.forEach(panel => {
+                    if (panel.id === 'profile-section') {
+                        panel.classList.add('active');
+                    } else {
+                        panel.classList.remove('active');
+                    }
+                });
+
+                // Fetch current user details from sessionStorage instead of GET
+                try {
+                    const data = JSON.parse(sessionStorage.getItem('eduai_user') || '{}');
+                    document.getElementById('profile-firstname').value = data.first_name || '';
+                    document.getElementById('profile-lastname').value = data.last_name || '';
+                    document.getElementById('profile-email').value = data.email || '';
+                } catch (err) {
+                    console.error('Failed to parse profile details from session', err);
+                }
+            });
+        }
 
         logoutBtn.addEventListener('click', async (e) => {
             e.preventDefault();
@@ -820,4 +861,122 @@ document.addEventListener('DOMContentLoaded', () => {
             handleFeedbackSubmission(feedbackInput || 'start');
         });
     }
+
+    // 6. Profile Settings Form Handling
+    const profileDetailsForm = document.getElementById('profile-details-form');
+    const profilePasswordForm = document.getElementById('profile-password-form');
+    const profileDetailsMsg = document.getElementById('profile-details-msg');
+    const profilePasswordMsg = document.getElementById('profile-password-msg');
+
+    if (profileDetailsForm) {
+        profileDetailsForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = profileDetailsForm.querySelector('button');
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Updating...';
+            profileDetailsMsg.textContent = '';
+            profileDetailsMsg.style.color = 'inherit';
+
+            const payload = {
+                first_name: document.getElementById('profile-firstname').value.trim() || undefined,
+                last_name: document.getElementById('profile-lastname').value.trim() || undefined,
+                email: document.getElementById('profile-email').value.trim() || undefined
+            };
+
+            if (payload.email) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(payload.email)) {
+                    profileDetailsMsg.textContent = 'Please enter a valid email address.';
+                    profileDetailsMsg.style.color = '#f87171';
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                    return;
+                }
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/profile/me`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                    credentials: 'include'
+                });
+                
+                const data = await parseApiResponse(response);
+                if (!response.ok) throw new Error(getApiErrorMessage(data, 'Update failed'));
+                
+                profileDetailsMsg.textContent = 'Details updated successfully!';
+                profileDetailsMsg.style.color = 'var(--success)';
+                
+                // Update UI and session
+                if (data.first_name) {
+                    username.textContent = data.first_name;
+                    avatar.textContent = data.first_name.slice(0, 2).toUpperCase();
+                    
+                    const user = JSON.parse(sessionStorage.getItem('eduai_user') || '{}');
+                    user.first_name = data.first_name;
+                    if (data.last_name) user.last_name = data.last_name;
+                    if (data.email) user.email = data.email;
+                    sessionStorage.setItem('eduai_user', JSON.stringify(user));
+                }
+            } catch (error) {
+                profileDetailsMsg.textContent = error.message;
+                profileDetailsMsg.style.color = '#f87171';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+        });
+    }
+
+    if (profilePasswordForm) {
+        profilePasswordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = profilePasswordForm.querySelector('button');
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Updating...';
+            profilePasswordMsg.textContent = '';
+            profilePasswordMsg.style.color = 'inherit';
+
+            const current_password = document.getElementById('profile-current-password').value;
+            const new_password = document.getElementById('profile-new-password').value;
+            const confirm_password = document.getElementById('profile-confirm-password').value;
+
+            if (new_password !== confirm_password) {
+                profilePasswordMsg.textContent = 'New passwords do not match';
+                profilePasswordMsg.style.color = '#f87171';
+                btn.disabled = false;
+                btn.textContent = originalText;
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/profile/me/password`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ current_password, new_password }),
+                    credentials: 'include'
+                });
+                
+                if (response.status !== 204) {
+                    const data = await parseApiResponse(response);
+                    throw new Error(getApiErrorMessage(data, 'Password update failed'));
+                }
+                
+                profilePasswordMsg.textContent = 'Password updated successfully!';
+                profilePasswordMsg.style.color = 'var(--success)';
+                profilePasswordForm.reset();
+            } catch (error) {
+                profilePasswordMsg.textContent = error.message;
+                profilePasswordMsg.style.color = '#f87171';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+        });
+    }
+
+
 });

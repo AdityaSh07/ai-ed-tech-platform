@@ -9,7 +9,8 @@ from app.routers import (
     auth,
     context_agent,
     notebook_agent,
-    research_agent
+    research_agent,
+    profile
 )
 
 from core.database import engine
@@ -55,6 +56,7 @@ app.include_router(auth.router)
 app.include_router(context_agent.router)
 app.include_router(notebook_agent.router)
 app.include_router(research_agent.router)
+app.include_router(profile.router)
 
 
 @app.get("/health")
@@ -64,6 +66,15 @@ def health_check():
         "service": "EduSphere AI API"
     }
 
+from fastapi.responses import FileResponse
+
+@app.get("/favicon.png", include_in_schema=False)
+async def favicon():
+    return FileResponse("favicon.png")
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon_ico():
+    return FileResponse("favicon.png")
 
 # Mount frontend static files
 app.mount("/", StaticFiles(directory="frontend_ed_tech", html=True), name="frontend")

@@ -146,8 +146,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const email = document.getElementById('reg-email').value;
+        const email = document.getElementById('reg-email').value.trim();
         const password = document.getElementById('reg-password').value;
+        const confirmPassword = document.getElementById('reg-confirm-password').value;
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            showMessage(registerMessage, 'Please enter a valid email address.', 'error');
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            showMessage(registerMessage, 'Passwords do not match', 'error');
+            return;
+        }
 
         registerButton.disabled = true;
         registerButton.textContent = 'Creating...';
@@ -181,4 +193,6 @@ document.addEventListener('DOMContentLoaded', () => {
             registerButton.textContent = 'Get Started';
         }
     });
+
+
 });
