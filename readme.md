@@ -36,7 +36,7 @@ Convert long papers, books, or syllabuses into clean, summarized markdown concep
   <img src="assets/note_creation%20example.png" alt="Forger Example" width="48%">
 </p>
 
-### 5. ExplorerAI (Autonomous Research) **(Coming Soon)**
+### 5. ExplorerAI (Autonomous Research)
 Initialize autonomous multi-step discovery loops with integrated web search tracking and validation checks. Track live agentic reasoning execution paths directly on your dashboard.
 <img src="assets/coming%20soon%20research%20agent.png" alt="ExplorerAI Agent" width="35%" height = "300">
 
