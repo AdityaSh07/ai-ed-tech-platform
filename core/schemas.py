@@ -44,7 +44,7 @@ class ChatRequest(BaseModel):
 class UserData(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
-    email: Optional[EmailStr] = None
+    email: Optional[str] = None
 
 class PassWord(BaseModel):
     current_password: str
