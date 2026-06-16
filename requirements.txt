@@ -14,6 +14,7 @@ pwdlib[argon2]
 
 # Validation & Settings
 pydantic
+pydantic-settings
 
 # Environment
 python-dotenv
@@ -34,9 +35,11 @@ langchain-groq
 langchain-tavily
 
 # Doc Loaders & OCR
-docling[rapidocr]
-opencv-python-headless==4.12.0.88
+docling
+PyMuPDF
+pypdf
+unstructured
+python-docx
 
 # Additional
-pydantic-settings
 sentence-transformers
