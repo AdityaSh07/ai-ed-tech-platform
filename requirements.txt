@@ -34,7 +34,8 @@ langchain-groq
 langchain-tavily
 
 # Doc Loaders & OCR
-docling
+docling[rapidocr]
+opencv-python-headless==4.12.0.88
 
 # Additional
 pydantic-settings
