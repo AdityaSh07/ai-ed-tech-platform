@@ -1,42 +1,42 @@
 # Web Framework & Server
-fastapi
-uvicorn
-python-multipart
+fastapi==0.135.1
+uvicorn==0.41.0
+python-multipart==0.0.22
 
 # Database & ORM
-sqlalchemy
-psycopg2-binary
-pymongo
+SQLAlchemy==2.0.47
+psycopg2-binary==2.9.11
+pymongo==4.17.0
 
 # Auth & Security
-python-jose
-pwdlib[argon2]
+python-jose==3.5.0
+pwdlib[argon2]==0.3.0
 
 # Validation & Settings
-pydantic
+pydantic==2.12.5
 
 # Environment
-python-dotenv
+python-dotenv==1.2.2
 
 # Agent & Orchestration (LangChain / LangGraph)
-langchain
-langchain-core
-langchain-community
-langchain-text-splitters
-langgraph
-langchainhub
-langchain-pinecone
-langchain-huggingface
-langchain-nvidia-ai-endpoints
+langchain==1.2.17
+langchain-core==1.3.2
+langchain-community==0.4.1
+langchain-text-splitters==1.1.1
+langgraph==1.1.10
+langchainhub==0.1.21
+langchain-pinecone==0.2.13
+langchain-huggingface==1.2.0
+langchain-nvidia-ai-endpoints==1.2.1
 
 # LLMs & Inference integrations
-langchain-groq
-langchain-tavily
+langchain-groq==1.1.2
+langchain-tavily==0.2.17
 
 # Doc Loaders & OCR
 docling==2.97.0
 opencv-python-headless==4.12.0.88
 
 # Additional
-pydantic-settings
-sentence-transformers
+pydantic-settings==2.14.1
+sentence-transformers==5.2.3
