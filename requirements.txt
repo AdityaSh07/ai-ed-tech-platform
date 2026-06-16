@@ -35,6 +35,9 @@ langchain-groq
 langchain-tavily
 
 # Doc Loaders & OCR
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch
+torchvision
 docling
 PyMuPDF
 pypdf
