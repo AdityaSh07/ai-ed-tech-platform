@@ -15,7 +15,7 @@ from app.load_documents.text_splitting import text_splitter
 from app.vector_store.vector_store import VECTOR_STORE
 from docling.document_converter import DocumentConverter
 from langchain_core.documents import Document
-
+from langchain_community.document_loaders import PyMuPDFLoader
 
 try:
     converter = DocumentConverter()
@@ -32,11 +32,18 @@ router = APIRouter(
 
 
 def process_document(file_path_str: str, current_user: int, filename: str):
-    if not converter:
-        raise RuntimeError("DocumentConverter is not initialized")
-
-    result = converter.convert(file_path_str)
-    markdown = result.document.export_to_markdown()
+    ext = Path(file_path_str).suffix.lower()
+    
+    if ext == ".pdf":
+        loader = PyMuPDFLoader(file_path_str)
+        docs = loader.load()
+        markdown = "\n\n".join([d.page_content for d in docs])
+    else:
+        if not converter:
+            raise RuntimeError("DocumentConverter is not initialized")
+        
+        result = converter.convert(file_path_str)
+        markdown = result.document.export_to_markdown()
 
     if not markdown.strip():
         raise ValueError("Uploaded document did not contain readable text")

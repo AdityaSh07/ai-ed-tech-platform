@@ -28,15 +28,24 @@ def extract_and_window_pages(file_path_str: str, window_size: int = 4, overlap: 
         if ext not in supported_extensions:
             raise ValueError(f"Unsupported file format: {ext}")
             
-        converter = DocumentConverter()
-        result = converter.convert(file_path_str)
-        doc = result.document
-        
-        full_text = doc.export_to_markdown()
-        full_text = clean_pdf_text(full_text)
-        
-        page_length = 2500
-        pages = [full_text[i:i+page_length] for i in range(0, len(full_text), page_length)]
+        if ext == ".pdf":
+            from langchain_community.document_loaders import PyMuPDFLoader
+            loader = PyMuPDFLoader(file_path_str)
+            docs = loader.load()
+            pages = [clean_pdf_text(doc.page_content) for doc in docs]
+        else:
+            from app.routers.context_agent import converter
+            if not converter:
+                raise RuntimeError("Global DocumentConverter is not initialized on the server.")
+            
+            result = converter.convert(file_path_str)
+            doc = result.document
+            
+            full_text = doc.export_to_markdown()
+            full_text = clean_pdf_text(full_text)
+            
+            page_length = 2500
+            pages = [full_text[i:i+page_length] for i in range(0, len(full_text), page_length)]
     except Exception as e:
         raise ValueError(f"Failed to process document: {e}")
 

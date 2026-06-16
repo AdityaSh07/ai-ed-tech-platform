@@ -36,6 +36,7 @@ langchain-tavily==0.2.17
 # Doc Loaders & OCR
 docling==2.97.0
 opencv-python-headless==4.12.0.88
+PyMuPDF==1.27.2.3
 
 # Additional
 pydantic-settings==2.14.1
