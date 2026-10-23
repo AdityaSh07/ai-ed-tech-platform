@@ -4,15 +4,34 @@ from pathlib import Path
 from typing import List
 from langchain_core.messages import SystemMessage, HumanMessage
 from app.agents.research_agent.state import State
-from app.agents.research_agent.schemas import RouterDecision, EvidenceItem, EvidencePack, Plan, Task, UpdatedQueries, ResearchMetadata
-from app.agents.research_agent.prompts import RESEARCH_SYSTEM, ORCH_SYSTEM, WORKER_SYSTEM, ROUTER_SYSTEM, USER_FEEDBACK_REVIEWER
-from app.agents.research_agent.config import llm
+from app.agents.research_agent.schemas import (
+    RouterDecision,
+    EvidenceItem,
+    EvidencePack,
+    Plan,
+    Task,
+    UpdatedQueries,
+    ResearchMetadata,
+)
+from app.agents.research_agent.prompts import (
+    RESEARCH_SYSTEM,
+    ORCH_SYSTEM,
+    WORKER_SYSTEM,
+    ROUTER_SYSTEM,
+    USER_FEEDBACK_REVIEWER,
+)
+from app.agents.research_agent.config import (
+    tool_llm,
+    writer_llm,
+    synthesizer_llm,
+)
 from langgraph.types import Send, interrupt, Command
 from app.agents.research_agent.utils import _tavily_search, _iso_to_date
 
+
 def router_node(state: State) -> dict:
     topic = state["topic"]
-    decider = llm.with_structured_output(RouterDecision)
+    decider = tool_llm.with_structured_output(RouterDecision)
     decision = decider.invoke(
         [
             SystemMessage(content=ROUTER_SYSTEM),
@@ -35,13 +54,13 @@ def router_node(state: State) -> dict:
         "recency_days": recency_days,
     }
 
-def human_in_loop(state: State):
 
+def human_in_loop(state: State):
     queries = state.get("queries", [])
 
     if len(queries) == 0:
         return {"user_feedback": "start"}
-    
+
     user_feedback = interrupt(
         '''Please review the research queries. \n
         Would you like to start research or modify the research queries?\n\n
@@ -49,20 +68,27 @@ def human_in_loop(state: State):
         '''
     )
 
-    if user_feedback == 'start':
-        return {'user_feedback': 'start'}
+    feedback_text = user_feedback
+    if isinstance(user_feedback, dict):
+        if user_feedback.get("selected_queries"):
+            queries = user_feedback["selected_queries"]
+        feedback_text = user_feedback.get("feedback") or "start"
 
-    review_llm = llm.with_structured_output(UpdatedQueries)
+    if feedback_text == 'start' or not feedback_text:
+        return {'queries': queries, 'user_feedback': 'start'}
+
+    review_llm = tool_llm.with_structured_output(UpdatedQueries)
 
     prompt_text = USER_FEEDBACK_REVIEWER.format(
         topic=state['topic'],
-        user_feedback=user_feedback,
-        queries=queries
+        user_feedback=feedback_text,
+        queries=queries,
     )
 
     updated_queries = review_llm.invoke([HumanMessage(content=prompt_text)])
 
-    return {'queries': updated_queries.queries, 'user_feedback': user_feedback}
+    return {'queries': updated_queries.queries, 'user_feedback': feedback_text}
+
 
 def route_human_in_loop(state: State) -> str:
     if state.get("user_feedback") == "start":
@@ -88,17 +114,15 @@ def research_node(state: State) -> dict:
         url = r.get("url")
         if url and url not in dedup:
             snippet = r.get("snippet") or ""
-            
             dedup[url] = EvidenceItem(
                 title=r.get("title", ""),
                 url=url,
                 published_at=r.get("published_at"),
                 snippet=snippet,
-                source=r.get("source")
+                source=r.get("source"),
             )
-            
-    evidence = list(dedup.values())
 
+    evidence = list(dedup.values())
 
     mode = state.get("mode", "closed_book")
     if mode == "open_book":
@@ -113,8 +137,9 @@ def research_node(state: State) -> dict:
 
     return {"evidence": evidence}
 
+
 def orchestrator_node(state: State) -> dict:
-    planner = llm.with_structured_output(ResearchMetadata)
+    planner = tool_llm.with_structured_output(ResearchMetadata)
     evidence = state.get("evidence", [])
     mode = state.get("mode", "closed_book")
     queries = state.get("queries", [])
@@ -138,10 +163,9 @@ def orchestrator_node(state: State) -> dict:
         ]
     )
 
-
     if forced_kind:
         metadata.blog_kind = "news_roundup"
-        
+
     tasks = []
     for i, q in enumerate(queries):
         tasks.append(
@@ -152,11 +176,11 @@ def orchestrator_node(state: State) -> dict:
                 bullets=[
                     f"Summarize the most important findings for '{q}'",
                     f"Synthesize any relevant tools, examples, or data from the evidence related to '{q}'",
-                    f"Provide actionable takeaways or insights regarding '{q}'"
+                    f"Provide actionable takeaways or insights regarding '{q}'",
                 ],
                 target_words=300,
                 requires_research=True,
-                requires_citations=True
+                requires_citations=True,
             )
         )
 
@@ -166,10 +190,11 @@ def orchestrator_node(state: State) -> dict:
         tone=metadata.tone,
         blog_kind=metadata.blog_kind,
         constraints=metadata.constraints,
-        tasks=tasks
+        tasks=tasks,
     )
 
     return {"plan": plan}
+
 
 def fanout(state: State):
     assert state["plan"] is not None
@@ -189,8 +214,8 @@ def fanout(state: State):
         for task in state["plan"].tasks
     ]
 
+
 def worker_node(payload: dict) -> dict:
-    
     task = Task(**payload["task"])
     plan = Plan(**payload["plan"])
     evidence = [EvidenceItem(**e) for e in payload.get("evidence", [])]
@@ -209,7 +234,7 @@ def worker_node(payload: dict) -> dict:
             for e in evidence[:20]
         )
 
-    section_md = llm.invoke(
+    section_md = writer_llm.invoke(
         [
             SystemMessage(content=WORKER_SYSTEM),
             HumanMessage(
@@ -239,11 +264,20 @@ def worker_node(payload: dict) -> dict:
     # deterministic ordering
     return {"sections": [(task.id, section_md)]}
 
+
 def merge_content(state: State) -> dict:
-
     plan = state["plan"]
-
     ordered_sections = [md for _, md in sorted(state["sections"], key=lambda x: x[0])]
     body = "\n\n".join(ordered_sections).strip()
-    merged_md = f"# {plan.blog_title}\n\n{body}\n"
-    return {"merged_md": merged_md}
+
+    prompt = [
+        SystemMessage(
+            content="You are an expert technical editor. Combine the following research sections into a cohesive, publication-grade markdown article with seamless transitions between sections. Keep all citations, code, and technical findings intact. Start with an # H1 title."
+        ),
+        HumanMessage(content=f"Title: {plan.blog_title}\n\nSections:\n{body}"),
+    ]
+    try:
+        merged_md = synthesizer_llm.invoke(prompt).content.strip()
+        return {"merged_md": merged_md}
+    except Exception:
+        return {"merged_md": f"# {plan.blog_title}\n\n{body}\n"}

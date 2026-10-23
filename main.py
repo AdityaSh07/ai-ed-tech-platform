@@ -1,5 +1,6 @@
 import os
 import warnings
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -22,10 +23,18 @@ with warnings.catch_warnings():
         message=".*not known to support structured output.*"
     )
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Asynchronously create tables on startup
+    async with engine.begin() as conn:
+        await conn.run_sync(user_model.Base.metadata.create_all)
+    yield
+
 app = FastAPI(
     title="EduSphere AI",
     description="Ed-Tech platform",
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 # CORS
@@ -47,9 +56,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Create database tables
-user_model.Base.metadata.create_all(bind=engine)
 
 # Routers
 app.include_router(auth.router)

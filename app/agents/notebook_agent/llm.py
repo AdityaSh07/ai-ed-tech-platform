@@ -5,6 +5,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 llm = ChatNVIDIA(
-    model="meta/llama-3.3-70b-instruct",
+    model="nvidia/nemotron-3.5-bolt-e4b",
     nvidia_api_key=os.getenv("NVIDIA_API_KEY")
 )

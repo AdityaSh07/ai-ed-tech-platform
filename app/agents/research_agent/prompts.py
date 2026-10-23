@@ -10,7 +10,7 @@ Modes:
 
 CRITICAL INSTRUCTIONS:
 - You MUST set needs_research=true for ALL topics.
-- Output 8–10 high-signal queries or as the amount of queries asked for.
+- Output 3–4 focused, high-signal queries. DO NOT exceed 4 queries to prevent token limit exhaustion.
 - Queries should be scoped and specific (avoid generic queries like just "AI" or "LLM").
 - For open_book weekly roundup, include queries that reflect the last 7 days constraint.
 """

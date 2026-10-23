@@ -49,6 +49,8 @@ vector_db_settings = VectorDBSettings()
 class LLMSettings(BaseSettings):
     LLM_GOOGLE: str = "gemini-2.5-flash"
     LLM_GROQ_OPENAI: str = "openai/gpt-oss-120b"
+    LLM_GROQ_OPENAI_20B: str = "openai/gpt-oss-20b"
+    LLM_GROQ_QWEN: str = "qwen/qwen3.8-27b"
     LLM_GROQ_LLAMA: str = "llama-3.3-70b-versatile"
     LLM_NVIDIA: str = "meta/llama-3.3-70b-instruct"
     LLM_REASONING_TEMPERATURE: float = 0
