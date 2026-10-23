@@ -329,12 +329,17 @@ MONGO_KEY=
 │   ├── core/                      # Global settings & database connection
 │   └── database/                  # SQLAlchemy models & migrations
 ├── assets/                        # Platform screenshots, graphs, & UI assets
-├── frontend_ed_tech/              # Modern Vanilla JS/CSS client application
-│   └── frontend/
-│       ├── login.html             # Auth portal
-│       ├── dashboard.html         # Unified agent workspace
-│       ├── dashboard.js           # Multi-agent UI & human-in-the-loop handlers
-│       └── style.css              # Custom styling & typography
+├── frontend_ed_tech/              # Frontend Web Application
+│   ├── assets/
+│   │   └── images/                # UI illustrations (RAG, Forger, ExplorerAI)
+│   ├── css/
+│   │   ├── auth.css               # Landing & authentication styling
+│   │   └── dashboard.css          # Multi-agent workspace dashboard styling
+│   ├── js/
+│   │   ├── auth.js                # Auth session & transition handlers
+│   │   └── dashboard.js           # Multi-agent UI, chat, & human-in-the-loop logic
+│   ├── index.html                 # Landing & authentication portal
+│   └── dashboard.html             # Main agentic workspace dashboard
 ├── get_graph.py                   # Master CLI utility for LangGraph visual exports
 ├── main.py                        # FastAPI entrypoint & router aggregation
 └── requirements.txt               # Dependencies

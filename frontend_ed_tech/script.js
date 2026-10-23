@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Use an absolute path for dashboard if on file protocol
-    const DASHBOARD_URL = isFileProtocol ? 'frontend/dashboard.html' : '/frontend/dashboard.html';
+    const DASHBOARD_URL = isFileProtocol ? 'dashboard.html' : '/dashboard.html';
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
     const toRegisterBtn = document.getElementById('to-register');

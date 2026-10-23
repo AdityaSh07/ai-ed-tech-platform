@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     } else {
         // Redirect to login if user is not authenticated
-        window.location.href = '/';
+        window.location.href = window.location.protocol === 'file:' ? 'index.html' : '/';
         return;
     }
 
@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem('first_name');
             localStorage.removeItem('last_name');
             localStorage.removeItem('email');
-            window.location.href = '../index.html';
+            window.location.href = window.location.protocol === 'file:' ? 'index.html' : '/';
         });
     }
 
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (chatOutput) chatOutput.innerHTML = '';
                 if (notesOutput) notesOutput.innerHTML = '';
                 if (researchLogs) researchLogs.innerHTML = '';
-                window.location.href = '/';
+                window.location.href = window.location.protocol === 'file:' ? 'index.html' : '/';
             }
         });
     }
