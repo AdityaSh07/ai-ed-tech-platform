@@ -32,6 +32,7 @@ modules/
 # ==========================================
 # Ignores local file processing folders from your Document Settings
 documents/
+app/load_documents/uploads/
 *.pdf
 *.epub
 *.txt

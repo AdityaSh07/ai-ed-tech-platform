@@ -1,8 +1,10 @@
-from langchain_groq import ChatGroq
+from langchain_nvidia_ai_endpoints import ChatNVIDIA
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# We can use the same model setup as context_agent
-gen_llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.3)
+llm = ChatNVIDIA(
+    model="nvidia/nemotron-3.5-bolt-e4b",
+    nvidia_api_key=os.getenv("NVIDIA_API_KEY")
+)

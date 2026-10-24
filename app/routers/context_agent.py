@@ -12,10 +12,10 @@ from app.agents.context_agent.graph import agent
 load_dotenv()
 
 from app.load_documents.text_splitting import text_splitter
-from app.vector_store.vector_store import VECTOR_STORE
+from app.vector_store.vector_store import upsert_chunks
 from docling.document_converter import DocumentConverter
 from langchain_core.documents import Document
-
+from langchain_community.document_loaders import PyMuPDFLoader
 
 try:
     converter = DocumentConverter()
@@ -32,11 +32,18 @@ router = APIRouter(
 
 
 def process_document(file_path_str: str, current_user: int, filename: str):
-    if not converter:
-        raise RuntimeError("DocumentConverter is not initialized")
-
-    result = converter.convert(file_path_str)
-    markdown = result.document.export_to_markdown()
+    ext = Path(file_path_str).suffix.lower()
+    
+    if ext == ".pdf":
+        loader = PyMuPDFLoader(file_path_str)
+        docs = loader.load()
+        markdown = "\n\n".join([d.page_content for d in docs])
+    else:
+        if not converter:
+            raise RuntimeError("DocumentConverter is not initialized")
+        
+        result = converter.convert(file_path_str)
+        markdown = result.document.export_to_markdown()
 
     if not markdown.strip():
         raise ValueError("Uploaded document did not contain readable text")
@@ -45,7 +52,8 @@ def process_document(file_path_str: str, current_user: int, filename: str):
         page_content=markdown,
         metadata={
             "id": current_user,
-            "source": filename
+            "source": filename,
+            "title": filename
         }
     )
 
@@ -54,9 +62,9 @@ def process_document(file_path_str: str, current_user: int, filename: str):
     if not chunks:
         raise ValueError("No text chunks were created from this document")
 
-    document_ids = VECTOR_STORE.add_documents(chunks)
+    num_vectors = upsert_chunks(chunks, current_user=current_user, filename=filename)
 
-    return len(chunks), len(document_ids)
+    return len(chunks), num_vectors
 
 
 @router.post("/upload")
@@ -162,7 +170,13 @@ async def chat(
         config=config
     )
 
-    assistant_response = result["final_answer"]
+    assistant_response = (
+        result.get("final_answer")
+        or (result.get("chat_history")[-1].content if result.get("chat_history") else None)
+        or result.get("rewrite_query")
+        or "I apologize, but no answer could be compiled for your request."
+    )
+    result["final_answer"] = assistant_response
 
 
     messages.insert_one({

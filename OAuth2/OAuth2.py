@@ -3,7 +3,8 @@ from core.config import jwt_settings
 from fastapi import Depends, HTTPException, status, Request
 from core import database, models, schemas
 from jose import jwt, JWTError
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 
 
 def create_access_token(data: dict):
@@ -32,10 +33,12 @@ def verify_access_token(token: str, credentials_exception):
     return token_data
 
 
-def get_current_user(request: Request, db: Session = Depends(database.get_db)):
-    credentials_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                                          detail=f'Could not validate credentials',
-                                          headers={'WWW-Authenticate': "Bearer"})
+async def get_current_user(request: Request, db: AsyncSession = Depends(database.get_db)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"}
+    )
 
     token = request.cookies.get("access_token")
     if not token:
@@ -43,13 +46,15 @@ def get_current_user(request: Request, db: Session = Depends(database.get_db)):
 
     token_data = verify_access_token(token, credentials_exception)
 
-    user = db.query(models.user_model.User).filter(models.user_model.User.id == token_data.id).first()
+    result = await db.execute(
+        select(models.user_model.User).filter(models.user_model.User.id == token_data.id)
+    )
+    user = result.scalars().first()
 
     if not user:
         raise credentials_exception
 
     return int(user.id)
-
 
 # jwt.encode() & jwt.decode() for verification at each request
 # to get headers and tokens we use request: Request in fastapi to get cookies and browser stuff and after getting it we verify
